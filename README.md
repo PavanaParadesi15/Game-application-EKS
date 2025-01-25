@@ -102,6 +102,96 @@ kubectl get ing -n game-2048               // displays ingress resource created
 
 
 
+## Deploy ALB Controller
+
+* Any controller in K8s is a Pod. We have to grant access to Pod to AWS services like ALB. ALB Ingress controller should create Application LB.
+* The pre-requisite  for ALB Controller is to configure oidc-connector. 
+* Without the OIDC Connector, installing ALB Connector add-on fails.
+* We need IAM OIDC Connector because, the ALB Controller running needs to access Application LB. Controller is a K8s pod.
+* So for a pod to talk to AWS resources, it needs IAM Integrator, so for that purpose we need to configure IAM OIDC-Connector.
+
+Command to configure this
+
+```
+eksctl utils associate-iam-oidc-provider --cluster cluster-name --approve
+```
+
+### Download IAM Policy
+```
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
+```
+
+### Create IAM Policy for ALB Controller 
+```
+aws iam create-policy \
+    --policy-name AWSLoadBalancerControllerIAMPolicy \
+    --policy-document file://iam_policy.json
+```
+
+### Create IAM Role
+* Attaching role to service account of the Pod, so that pod can interact with other AWS services
+* I am creating a service account for IAM. Creating role for that
+
+```
+eksctl create iamserviceaccount \
+  --cluster=game-cluster \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --role-name AmazonEKSLoadBalancerControllerRole \
+  --attach-policy-arn=arn:aws:iam::<your-aws-account-id>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve
+```
+
+## Deploy ALB controller
+* For this I am using Helm chart, which creates actual controller which creates service account for running pod
+### Install heml
+```
+sudo snap install helm --classic
+helm version
+```
+
+### Add helm repo
+```
+helm repo add eks https://aws.github.io/eks-charts
+```
+### Update the repo
+```
+helm repo update eks
+```
+### Install Helm chart
+
+```
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \            
+  -n kube-system \
+  --set clusterName=<your-cluster-name> \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller \
+  --set region=<region> \
+  --set vpcId=<your-vpc-id>
+```
+
+### Verify that the Application Load balancer controller (pods)  deployments are running.
+* Check if the LB is created and there are atleast 2 replicas of it. each one in one Availability zone. It continuously watches for ingress resource
+* load balancer deployments are created in "kube-system" namespace
+
+```
+kubectl get deployment -n kube-system aws-load-balancer-controller
+kubectl get deploy -n kube-system                   // lists the deployments under "kube-system" namespace  
+```
+* To check/troubleshoot the ALB controller deployment
+```
+kubectl describe deploy/aws-load-balancer-controller -n kube-system
+```
+
+So ALB controller has created Application Load Balancer, based on the ingress resource
+
+
+
+
+
+
+
+
 
 
 
