@@ -1,0 +1,20 @@
+# This is service for the pods
+# The targetport should be the container port of the pod
+# selector should match the labels in deployment.yml
+# Using labels and selectors service can discover the pods
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: game-2048
+  name: service-2048
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: app-2048      
+    
