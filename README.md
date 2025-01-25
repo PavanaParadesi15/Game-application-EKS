@@ -62,7 +62,22 @@ eksctl create cluster --name game-cluster --region us-east-1 --fargate
 * Using fargate in this case. 
 * The above eksctl command creates all the necessary field for EKS CLutser. like service role, configuration for networking, public & private subnets within the VPC, application is deployed inside private subnet.
 
+OpenID Connect provider URL  
 
+ID - Identity provider like LDAP where we create users. 
+Fargate profile : attached to default and kube-system namespaces. We can create new Fargate profile
+In Authentication we can attach Identity providers. 
+
+
+## Create Fargate profile for 2048 game app
+
+```
+eksctl create fargateprofile \
+    --cluster game-cluster \
+    --region us-east-1 \
+    --name alb-sample-app \              // Fargate name - alb-sample-app
+    --namespace game-2048                // this is the namespace
+```
 
 
 
