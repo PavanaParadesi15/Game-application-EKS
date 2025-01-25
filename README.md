@@ -79,5 +79,38 @@ eksctl create fargateprofile \
     --namespace game-2048                // this is the namespace
 ```
 
+* Create deployment.yml , service.yml, ingress.yml files
+* Clone the  git repo to VM
+
+```
+kubectl apply -f deployment.yml
+kubectl apply -f service.yml
+kubectl apply -f ingress.yml
+```
+To see the created resources
+```
+kubectl get all -n gane-2048               // "game-2048" is the name space created for the resources
+kubectl get pods -n game-2048              // displays pods
+kubectl get deployment -n game-2048         // displays the deployment
+kubectl get svc -n game-2048               // displays services created
+kubectl get ing -n game-2048               // displays ingress resource created
+```
+
+* Now the service is of "NodePort" type, anybody with access to VPC can talk to the pods using nodeIP:port
+* For external users to communicate to the pods , I created ingress resource. There is no address created yet, address is for the users to access the application from outside
+* We have to create ingress controller. This ing controller reads the ingress resource (ingress-2048) and creates and configures ALB 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
