@@ -189,6 +189,12 @@ kubectl describe deploy/aws-load-balancer-controller -n kube-system
 So ALB controller has created Application Load Balancer, based on the ingress resource
 
 
+To get the load balancer address (Host name), where ingress controller  created ALB watching ingress resource 
+```
+kubectl get ingress -n game-2048
+```
+
+Application can be accessed s=using the above LB address.
 
 
 
