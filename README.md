@@ -58,7 +58,10 @@ One of the preffered way to create EKS Cluster is using eksctl
 ```
 eksctl create cluster --name game-cluster --region us-east-1 --fargate
 ```
-
+To delete EKS cluster
+```
+eksctl delete cluster --name clustername --region us-east-1         
+```
 * Using fargate in this case. 
 * The above eksctl command creates all the necessary field for EKS CLutser. like service role, configuration for networking, public & private subnets within the VPC, application is deployed inside private subnet.
 
