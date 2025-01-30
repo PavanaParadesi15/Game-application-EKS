@@ -161,8 +161,9 @@ helm repo add eks https://aws.github.io/eks-charts
 ```
 helm repo update eks
 ```
-### Install Helm chart
-
+### Install ALB Controller using Helm
+Helm Install Command for AWS Load Balancer Controller
+This command installs the AWS Load Balancer Controller on a Kubernetes cluster using Helm
 ```
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \            
   -n kube-system \
